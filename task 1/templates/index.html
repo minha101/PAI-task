@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Scraper - Extract Emails from Websites</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .input-group {
+            margin-bottom: 30px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        .url-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1em;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .url-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin-top: 15px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #c33;
+        }
+        
+        .results {
+            margin-top: 30px;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .results h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .url-info {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            word-break: break-all;
+        }
+        
+        .email-list {
+            list-style: none;
+        }
+        
+        .email-item {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            font-family: monospace;
+            font-size: 1.1em;
+            word-break: break-all;
+        }
+        
+        .no-emails {
+            text-align: center;
+            color: #666;
+            padding: 30px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            font-style: italic;
+        }
+        
+        .count-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+        
+        .nav-links {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: 600;
+        }
+        
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .about-section {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .about-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .about-section p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 Email Scraper</h1>
+        <div class="subtitle">Extract email addresses from any website</div>
+        
+        {% if about %}
+            <div class="about-section">
+                <h3>About Email Scraper</h3>
+                <p>This tool helps you extract email addresses from any public website. Simply enter the URL and click "Extract Emails" to get started.</p>
+                <p><strong>How it works:</strong></p>
+                <ul style="margin-left: 20px; color: #666;">
+                    <li>Enter a valid URL (with http:// or https://)</li>
+                    <li>The tool fetches the webpage content</li>
+                    <li>It scans for email addresses in the text and mailto links</li>
+                    <li>Results are displayed with unique emails only</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>Note:</strong> Please respect websites' terms of service and use this tool responsibly.</p>
+            </div>
+        {% endif %}
+        
+        <form method="POST" action="/">
+            <div class="input-group">
+                <label for="url">Enter Website URL:</label>
+                <input 
+                    type="text" 
+                    id="url" 
+                    name="url" 
+                    class="url-input" 
+                    placeholder="https://example.com"
+                    value="{{ url if url else '' }}"
+                    required
+                >
+            </div>
+            <button type="submit" class="submit-btn">Extract Emails</button>
+        </form>
+        
+        {% if error %}
+            <div class="error">
+                <strong>Error:</strong> {{ error }}
+            </div>
+        {% endif %}
+        
+        {% if emails is defined %}
+            <div class="results">
+                <h2>
+                    Results 
+                    <span class="count-badge">{{ emails|length }} found</span>
+                </h2>
+                
+                {% if url %}
+                    <div class="url-info">
+                        <strong>Scanned URL:</strong> {{ url }}
+                    </div>
+                {% endif %}
+                
+                {% if emails %}
+                    <ul class="email-list">
+                        {% for email in emails %}
+                            <li class="email-item">{{ email }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="no-emails">
+                        No email addresses found on this page.
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+        
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Use responsibly • Respect website terms of service • For educational purposes</p>
+    </div>
+</body>
+</html>
